@@ -13,7 +13,7 @@ namespace Pins {
         digitalWrite(CONTROL_MAIN_PIN, LOW);
     }
 
-    void checkTimers(uint32_t timeSinceStart) {
+    void togglePinsByTime(uint32_t timeSinceStart) {
         // Check whether the outputs need to be activated now
         bool releaseDrogue = Timing::isWithinReleaseDrogue(timeSinceStart);
         bool releaseMain = Timing::isWithinReleaseMain(timeSinceStart);

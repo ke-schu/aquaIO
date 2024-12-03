@@ -41,7 +41,7 @@ namespace Timing {
             static bool oldState = false;
             if(oldState != newState) {
                 oldState = newState;
-                DEBUG_PRINT(F("Drogue chute release state changed. New State: "));
+                DEBUG_PRINT(F("Drogue chute release state changed to "));
                 DEBUG_PRINTLN(newState);
             }
         #endif
@@ -54,7 +54,7 @@ namespace Timing {
             static bool oldState = false;
             if(oldState != newState) {
                 oldState = newState;
-                DEBUG_PRINT(F("Main chute release state changed. New State: "));
+                DEBUG_PRINT(F("Main chute release state changed to "));
                 DEBUG_PRINTLN(newState);
             }
         #endif
@@ -67,7 +67,7 @@ namespace Timing {
             static bool oldState = false;
             if(oldState != newState) {
                 oldState = newState;
-                DEBUG_PRINT(F("Drogue chute control state changed. New State: "));
+                DEBUG_PRINT(F("Drogue chute control state changed to "));
                 DEBUG_PRINTLN(newState);
             }
         #endif
@@ -80,7 +80,7 @@ namespace Timing {
             static bool oldState = false;
             if(oldState != newState) {
                 oldState = newState;
-                DEBUG_PRINT(F("Main chute control state changed. New State: "));
+                DEBUG_PRINT(F("Main chute control state changed to "));
                 DEBUG_PRINTLN(newState);
             }
         #endif

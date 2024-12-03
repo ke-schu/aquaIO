@@ -20,6 +20,6 @@ void loop() {
     // If rocket is launched, handle the timers for pin control
     if (StateMachine::rocketLaunched) {
         uint32_t timeSinceStart = millis() - StateMachine::millisOnStart;
-        Pins::checkTimers(timeSinceStart);  // Handle the state of control pins
+        Pins::togglePinsByTime(timeSinceStart);  // Handle the state of control pins
     }
 }

@@ -1,6 +1,11 @@
 #ifndef BUS_HPP
 #define BUS_HPP
 
+/*
+Before uploading the program, make sure to adjust TWI_RX_BUFFER_SIZE to 32 in the USI_TWI_Slave.h file from ATTinyCore!
+This is necessary because the default buffer size is 16, and it needs to be increased for larger data transfers.
+*/
+
 #include "Debug.hpp"
 #include <Arduino.h>
 #include <stdint.h>

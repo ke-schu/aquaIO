@@ -1,6 +1,10 @@
 #ifndef PINS_HPP
 #define PINS_HPP
 
+#ifdef PINMAPPING_CW
+    #error "Sketch was written for counter clockwise pin mapping!"
+#endif
+
 #include <stdint.h>
 #include <timing.hpp>
 #include <Arduino.h>
@@ -15,7 +19,7 @@ namespace Pins {
 
     // Function declarations
     void setupPins();
-    void checkTimers(uint32_t timeSinceStart);
+    void togglePinsByTime(uint32_t timeSinceStart);
 }
 
 #endif // PINS_HPP
