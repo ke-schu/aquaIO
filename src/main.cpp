@@ -1,225 +1,25 @@
-//-------------------------------------------------------------
-// Aquasonic 3 - AquaI/O
-// Program of the microcontroller from the AquaI/O board
-//-------------------------------------------------------------
-// Keno Schumann & Alexander Lorenz
-// Hochschule Bremen, F4, Aquasonic Avionics
-// Last change: 23.08.2024, Keno Schumann
-//-------------------------------------------------------------
-
 #include "main.hpp"
-#include <Arduino.h>
-#include <avr/io.h>
-#include <util/delay.h>
-#include <stdint.h>
-#include <stdbool.h>
-#include <Wire.h>
 
-//#define DEBUG // Activates debug mode via SoftwareSerial
-#define SOFT_TX_ONLY
-
-#ifdef DEBUG  // Check whether debug mode is active
-    // Replace DEBUG_PRINT with softSerial.print everywhere in the code 
-    #define DEBUG_PRINT(x) Serial.print(x);
-    #define DEBUG_PRINTLN(x) Serial.println(x)
-#else
-    #define DEBUG_PRINT(x)
-    #define DEBUG_PRINTLN(x)
-#endif
-
-#define RELEASE_DROGUE_PIN PIN_PB0
-#define RELEASE_MAIN_PIN PIN_PB1
-#define CONTROL_DROGUE_PIN PIN_PA2
-#define CONTROL_MAIN_PIN PIN_PA3
-
-// Constants
-const uint32_t PULSE_DURATION = 1500;  // Pulse duration of control signals in Millis
-const uint8_t AQUA_IO_ADDRESS = 42;    // I2C address for broadcast communication with AquaBrain (This uC is I2C-Slave)
-const uint8_t startData = 0b100000;    // Start message for data packet - the next 20 bytes are to be interpreted as data.
-const uint8_t launchedState = 0b0110;  // Message that is sent as long as the state machine is in the "launched" state
-
-// Drogue chute time window settings for release (time in milliseconds)
-// Enter the default values here!
-uint32_t beginReleaseDrogueChute = 0; //13000
-uint32_t endReleaseDrogueChute = 0;   //18000
-
-// Main chute time windows settings for release (time in milliseconds)
-// Enter the default values here!
-uint32_t beginReleaseMainChute = 0; //23000
-uint32_t endReleaseMainChute = 0;   //28000
-
-// Control signals for drogue chute in last instance (time in milliseconds)
-// Calculated from the release window and the PULSE_DURATION, a change here has no effect!
-uint32_t beginControlDrogueChute = 0;
-uint32_t endControlDrogueChute = 0;
-
-// Control signals for main chute in last instance (time in milliseconds)
-// Calculated from the release window and the PULSE_DURATION, a change here has no effect!
-uint32_t beginControlMainChute = 0;
-uint32_t endControlMainChute = 0;
-
-bool rocketLaunched = false;    // Indicates whether the rocket has already been launched.
-uint32_t millisOnStart = 0;     // Time elapsed from the start of the program to the launch of the rocket
-bool timeAdjustMode = false;    // Mode to set times via I2C - What time must be set?
-bool bytes_ready = false;
-int bytes_read = 0;
-uint8_t* recieve_buffer = new uint8_t[8];
-
-// Software Serial initialization to debug the Program
-//SoftwareSerial softSerial(99, 7);      // RX (doesn't matter, because we only want to send), TX
-
-void calculateControlTimes() {
-    beginControlDrogueChute = endReleaseDrogueChute - PULSE_DURATION;
-    endControlDrogueChute = endReleaseDrogueChute;
-    beginControlMainChute = endReleaseMainChute - PULSE_DURATION;
-    endControlMainChute = endReleaseMainChute;
-}
-
-void checkTimers(uint32_t timeSinceStart) {
-    // Find old states (for debugging purposes only)
-    bool releaseDrogueOld = digitalRead(RELEASE_DROGUE_PIN);
-    bool releaseMainOld = digitalRead(RELEASE_MAIN_PIN);
-    bool controlDrogueOld = digitalRead(CONTROL_DROGUE_PIN);
-    bool controlMainOld = digitalRead(CONTROL_MAIN_PIN);
-
-    // Check whether the outputs need to be activated now
-    bool releaseDrogue = timeSinceStart >= beginReleaseDrogueChute && timeSinceStart <= endReleaseDrogueChute;
-    bool releaseMain = timeSinceStart >= beginReleaseMainChute && timeSinceStart <= endReleaseMainChute;
-    bool controlDrogue = timeSinceStart >= beginControlDrogueChute && timeSinceStart <= endControlDrogueChute;
-    bool controlMain = timeSinceStart >= beginControlMainChute && timeSinceStart <= endControlMainChute;
-
-    // Debug Messages
-    if(releaseDrogueOld != releaseDrogue) {
-        DEBUG_PRINT(F("Drogue chute release state changed. New State: "));
-        DEBUG_PRINTLN(releaseDrogue);
-    }
-    if(releaseMainOld != releaseMain) {
-        DEBUG_PRINT(F("Main chute release state changed. New State: "));
-        DEBUG_PRINTLN(releaseMain);
-    }
-    if(controlDrogueOld != controlDrogue) {
-        DEBUG_PRINT(F("Drogue chute control state changed. New State: "));
-        DEBUG_PRINTLN(controlDrogue);
-    }
-    if(controlMainOld != controlMain) {
-        DEBUG_PRINT(F("Main chute control state changed. New State: "));
-        DEBUG_PRINTLN(controlMain);
-    }
-
-    // Set outputs
-    digitalWrite(RELEASE_DROGUE_PIN, releaseDrogue ? HIGH : LOW);
-    digitalWrite(RELEASE_MAIN_PIN, releaseMain ? HIGH : LOW);
-    digitalWrite(CONTROL_DROGUE_PIN, controlDrogue ? HIGH : LOW);
-    digitalWrite(CONTROL_MAIN_PIN, controlMain ? HIGH : LOW);
-}
-
-// concat_bytes takes a number of bytes (up to 4) and concatenates them into a integer
-int concat_bytes(uint8_t byteA, uint8_t byteB) {
-    int res = byteB;
-    res |= (byteA << 8);
-    return res;
-}
-
-void checkCmd(uint8_t incomingMsg) {
-    switch (incomingMsg) {
-        case startData:
-            // Start-Signal für Datenpaket
-            timeAdjustMode = true;
-            DEBUG_PRINT("Start-Signal für Daten-Paket empfangen: ");
-            break;
-        case launchedState:
-            if (!rocketLaunched) {       // Timer-Start nur einmal setzen
-                rocketLaunched = true;
-                millisOnStart = millis();
-            }
-            DEBUG_PRINT("Status-Signal Raketenstart empfangen: ");
-            break;
-        default:
-            DEBUG_PRINT("Ungültige Nachricht: ");
-    }
-    DEBUG_PRINTLN(incomingMsg);
-}
-
-void setTimes(uint8_t dataPackage[]) {
-    beginReleaseDrogueChute = concat_bytes(dataPackage[0], dataPackage[1]) * 100;
-    endReleaseDrogueChute = concat_bytes(dataPackage[2], dataPackage[3]) * 100;
-    beginReleaseMainChute = concat_bytes(dataPackage[4], dataPackage[5]) * 100;
-    endReleaseMainChute = concat_bytes(dataPackage[6], dataPackage[7]) * 100;
-    DEBUG_PRINTLN(beginReleaseDrogueChute);
-    DEBUG_PRINTLN(endReleaseDrogueChute);
-    DEBUG_PRINTLN(beginReleaseMainChute);
-    DEBUG_PRINTLN(endReleaseMainChute);
-    calculateControlTimes(); // Set Control Times again
-}
-
-// onRecieve() handler, puts recieved bytes in buffer and returns
-void on_recieve(int len) {
-    if (bytes_ready) {
-        return;
-    }
-    memset(recieve_buffer, 0, 32); // TODO woanders inti
-    int i = 0;    
-    while (Wire.available()) {
-        recieve_buffer[i] = Wire.read();
-        i++;
-    }
-    bytes_ready = true;
-    bytes_read = len;
-}
-
-void initBus() {
-    Wire.begin(AQUA_IO_ADDRESS);  // join i2c bus with address #8
-    Wire.onReceive(&on_recieve);  // register event
-}
-
-int main(void) {
-    #ifdef DEBUG                  // Check if debug mode is activated
-      Serial.begin(4800);     // Start SoftwareSerial
+void setup() {
+    #ifdef DEBUG
+        Serial.begin(4800);  // Initialize serial communication for debugging
     #endif
 
-    calculateControlTimes();                        // Set control times
-    init();                                         // Initiate ATTinyCore board manager package (e.g. for millis())
-    DEBUG_PRINTLN(F("ATtiny84a Program started.")); // Print Startup Sequence via SoftwareSerial
+    DEBUG_PRINTLN(F("ATtiny84a Program started."));
 
-    delay(500);
-    initBus();
+    // Initialize the modules
+    Timing::initialize();
+    Bus::initialize();
+    Pins::setupPins();  // Setup all the pins required by the system
+}
 
-    // Set pins as output
-    pinMode(RELEASE_DROGUE_PIN, OUTPUT);
-    pinMode(RELEASE_MAIN_PIN, OUTPUT);
-    pinMode(CONTROL_DROGUE_PIN, OUTPUT);
-    pinMode(CONTROL_MAIN_PIN, OUTPUT);
-    // Set outputs
-    /*digitalWrite(RELEASE_DROGUE_PIN, LOW);
-    digitalWrite(RELEASE_MAIN_PIN, LOW);
-    digitalWrite(CONTROL_DROGUE_PIN, LOW);
-    digitalWrite(CONTROL_MAIN_PIN, LOW);*/
+void loop() {
+    // Handle incoming data and state transitions
+    StateMachine::handleIncomingData();
 
-    while (1) {
-        if(bytes_ready) {
-            DEBUG_PRINT("Bytes ready: ");
-            DEBUG_PRINTLN(bytes_read);
-            if(timeAdjustMode) {
-                if(bytes_read == 20) {
-                    setTimes(recieve_buffer);
-                }
-                timeAdjustMode = false;
-            } else {
-                if(bytes_read == 1) {
-                    checkCmd(recieve_buffer[0]);
-                }
-            }
-            bytes_ready = false;
-        }
-
-        if (rocketLaunched) {
-            // Calculate the time difference between start and current time
-            uint32_t timeSinceStart = millis() - millisOnStart;
-
-            // Check and update pin states based on timers
-            checkTimers(timeSinceStart);
-        }
+    // If rocket is launched, handle the timers for pin control
+    if (StateMachine::rocketLaunched) {
+        uint32_t timeSinceStart = millis() - StateMachine::millisOnStart;
+        Pins::checkTimers(timeSinceStart);  // Handle the state of control pins
     }
-
-    return 0;
 }

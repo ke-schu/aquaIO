@@ -1,6 +1,4 @@
 #include "Bus.hpp"
-#include <Wire.h>
-#include <string.h>
 
 namespace Bus {
     constexpr int BUFFER_SIZE = 32;
@@ -8,12 +6,14 @@ namespace Bus {
     bool dataReady = false;
     int dataLength = 0;
 
-    void initialize(uint8_t address) {
-        Wire.begin(address);
-        Wire.onReceive(onReceive);
+    void initialize() {
+        Wire.begin(AQUA_IO_ADDRESS);
+        Wire.onReceive(&onReceive);
+        DEBUG_PRINTLN("Bus initialisiert.");
     }
 
     void onReceive(int len) {
+        DEBUG_PRINTLN("HELLO!");
         if (dataReady) return;
 
         memset(receiveBuffer, 0, BUFFER_SIZE);

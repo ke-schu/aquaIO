@@ -2,6 +2,8 @@
 #define TIMING_HPP
 
 #include <stdint.h>
+#include <Arduino.h>
+#include "Debug.hpp"
 
 namespace Timing {
 

@@ -1,6 +1,4 @@
 #include "timing.hpp"
-#include <Arduino.h>
-#include <main.hpp> // For DEBUG_PRINT macros, if required
 
 namespace Timing {
 
@@ -35,19 +33,55 @@ namespace Timing {
     }
 
     bool isWithinReleaseDrogue(uint32_t timeSinceStart) {
-        return timeSinceStart >= beginReleaseDrogueChute && timeSinceStart <= endReleaseDrogueChute;
+        bool newState = timeSinceStart >= beginReleaseDrogueChute && timeSinceStart <= endReleaseDrogueChute;
+        #ifdef DEBUG
+            static bool oldState = false;
+            if(oldState != newState) {
+                oldState = newState;
+                DEBUG_PRINT(F("Drogue chute release state changed. New State: "));
+                DEBUG_PRINTLN(newState);
+            }
+        #endif
+        return newState;
     }
 
     bool isWithinReleaseMain(uint32_t timeSinceStart) {
-        return timeSinceStart >= beginReleaseMainChute && timeSinceStart <= endReleaseMainChute;
+        bool newState = timeSinceStart >= beginReleaseMainChute && timeSinceStart <= endReleaseMainChute;
+        #ifdef DEBUG
+            static bool oldState = false;
+            if(oldState != newState) {
+                oldState = newState;
+                DEBUG_PRINT(F("Main chute release state changed. New State: "));
+                DEBUG_PRINTLN(newState);
+            }
+        #endif
+        return newState;
     }
 
     bool isWithinControlDrogue(uint32_t timeSinceStart) {
-        return timeSinceStart >= beginControlDrogueChute && timeSinceStart <= endControlDrogueChute;
+        bool newState = timeSinceStart >= beginControlDrogueChute && timeSinceStart <= endControlDrogueChute;
+        #ifdef DEBUG
+            static bool oldState = false;
+            if(oldState != newState) {
+                oldState = newState;
+                DEBUG_PRINT(F("Drogue chute control state changed. New State: "));
+                DEBUG_PRINTLN(newState);
+            }
+        #endif
+        return newState;
     }
 
     bool isWithinControlMain(uint32_t timeSinceStart) {
-        return timeSinceStart >= beginControlMainChute && timeSinceStart <= endControlMainChute;
+        bool newState = timeSinceStart >= beginControlMainChute && timeSinceStart <= endControlMainChute;
+        #ifdef DEBUG
+            static bool oldState = false;
+            if(oldState != newState) {
+                oldState = newState;
+                DEBUG_PRINT(F("Main chute control state changed. New State: "));
+                DEBUG_PRINTLN(newState);
+            }
+        #endif
+        return newState;
     }
 
     #ifdef DEBUG
