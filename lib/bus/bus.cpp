@@ -13,7 +13,6 @@ namespace Bus {
     }
 
     void onReceive(int len) {
-        DEBUG_PRINTLN("HELLO!");
         if (dataReady) return;
 
         memset(receiveBuffer, 0, BUFFER_SIZE);

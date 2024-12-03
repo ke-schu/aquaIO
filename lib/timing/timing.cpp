@@ -30,6 +30,9 @@ namespace Timing {
         beginReleaseMainChute = (dataPackage[4] << 8 | dataPackage[5]) * 100;
         endReleaseMainChute = (dataPackage[6] << 8 | dataPackage[7]) * 100;
         calculateControlTimes();
+        #ifdef DEBUG
+             printTimeWindows();
+        #endif
     }
 
     bool isWithinReleaseDrogue(uint32_t timeSinceStart) {
@@ -95,6 +98,16 @@ namespace Timing {
         DEBUG_PRINT(beginReleaseMainChute);
         DEBUG_PRINT(" - ");
         DEBUG_PRINTLN(endReleaseMainChute);
+
+        DEBUG_PRINT("Drogue Control Window: ");
+        DEBUG_PRINT(beginControlDrogueChute);
+        DEBUG_PRINT(" - ");
+        DEBUG_PRINTLN(endControlDrogueChute);
+
+        DEBUG_PRINT("Main Control Window: ");
+        DEBUG_PRINT(beginControlMainChute);
+        DEBUG_PRINT(" - ");
+        DEBUG_PRINTLN(endControlMainChute);
     }
     #endif
 }

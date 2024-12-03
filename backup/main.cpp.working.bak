@@ -15,8 +15,7 @@
 #include <stdbool.h>
 #include <Wire.h>
 
-//#define DEBUG // Activates debug mode via SoftwareSerial
-#define SOFT_TX_ONLY
+#define DEBUG // Activates debug mode via SoftwareSerial
 
 #ifdef DEBUG  // Check whether debug mode is active
     // Replace DEBUG_PRINT with softSerial.print everywhere in the code 

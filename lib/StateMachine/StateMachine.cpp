@@ -15,8 +15,8 @@ namespace StateMachine {
             int len = Bus::getDataLength();
             uint8_t* data = Bus::getDataBuffer();
             
-            DEBUG_PRINT("Bytes ready: ");
-            DEBUG_PRINTLN(len);
+            DEBUG_PRINT(len);
+            DEBUG_PRINTLN(" Byte ready.");
 
             if (timeAdjustMode) {
                 if (len == 20) {
@@ -36,7 +36,7 @@ namespace StateMachine {
         switch (incomingMsg) {
             case startData:
                 timeAdjustMode = true;
-                DEBUG_PRINT("Start-Signal für Daten-Paket empfangen: ");
+                DEBUG_PRINT("Start für Datenpaket empf: ");
                 break;
 
             case launchedState:
@@ -44,7 +44,7 @@ namespace StateMachine {
                     rocketLaunched = true;
                     millisOnStart = millis();
                 }
-                DEBUG_PRINT("Status-Signal Raketenstart empfangen: ");
+                DEBUG_PRINT("Status Raketenstart empf: ");
                 break;
 
             default:
