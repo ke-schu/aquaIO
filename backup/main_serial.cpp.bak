@@ -1,0 +1,18 @@
+#include <Arduino.h>
+#include <SoftwareSerial.h>
+
+//uint8_t txbit = 1;
+
+SoftwareSerial softSerial(90, PIN_PA7);  // RX (nicht genutzt), TX (Pin 7)
+
+void setup() {
+    //pinMode(PIN_PA1, OUTPUT);
+    //Serial.setTxBit(txbit);
+    softSerial.begin(2400);
+    softSerial.println("Hello from ATtiny84");
+}
+
+void loop() {
+    softSerial.println("Ping...");
+    delay(1000);  // Sende jede Sekunde einen "Ping"
+}

@@ -1,0 +1,75 @@
+#include <Arduino.h>
+#include <unity.h>
+#include "main.hpp"  // Zugriff auf Funktionen und Variablen aus main.cpp
+
+void test_calculateControlTimes() {
+    // Test für berechnete Kontrollzeiten
+    beginReleaseDrogueChute = 13000;
+    endReleaseDrogueChute = 18000;
+    beginReleaseMainChute = 23000;
+    endReleaseMainChute = 28000;
+    
+    calculateControlTimes();
+    
+    TEST_ASSERT_EQUAL_UINT32(16500, beginControlDrogueChute);
+    TEST_ASSERT_EQUAL_UINT32(18000, endControlDrogueChute);
+    TEST_ASSERT_EQUAL_UINT32(26500, beginControlMainChute);
+    TEST_ASSERT_EQUAL_UINT32(28000, endControlMainChute);
+}
+
+void test_setTimes() {
+    uint8_t dataPackage[8] = {0x32, 0x00, 0x46, 0x00, 0x5A, 0x00, 0x6E, 0x00}; // Beispielwerte
+    
+    setTimes(dataPackage);
+    
+    TEST_ASSERT_EQUAL_UINT32(13000, beginReleaseDrogueChute);
+    TEST_ASSERT_EQUAL_UINT32(18000, endReleaseDrogueChute);
+    TEST_ASSERT_EQUAL_UINT32(23000, beginReleaseMainChute);
+    TEST_ASSERT_EQUAL_UINT32(28000, endReleaseMainChute);
+}
+
+void test_checkCmd_startData() {
+    checkCmd(0b100000);  // Start-Nachricht
+    
+    TEST_ASSERT_TRUE(timeAdjustMode);
+}
+
+void test_checkCmd_launchedState() {
+    // Test für Raketenstartbefehl
+    checkCmd(0b0110);
+    
+    TEST_ASSERT_TRUE(rocketLaunched);
+    TEST_ASSERT_EQUAL(millis(), millisOnStart);
+}
+
+void test_setPinHighOrLow() {
+    // Test für manuelles Setzen der Pins
+    volatile uint8_t testPort = 0x00;
+    setPinHighOrLow(&testPort, 2, true);  // Setze Bit 2 auf HIGH
+    TEST_ASSERT_TRUE(testPort & (1 << 2));
+
+    setPinHighOrLow(&testPort, 2, false); // Setze Bit 2 auf LOW
+    TEST_ASSERT_FALSE(testPort & (1 << 2));
+}
+
+void setup() {
+    Serial.begin(9600);       // Start der seriellen Verbindung
+    delay(1000);
+    Serial.println("Starting Tests...");  // Debug-Ausgabe
+    delay(100);  // Kleine Verzögerung vor Unity-Initialisierung
+    UNITY_BEGIN();
+    
+    // Testfälle registrieren
+    RUN_TEST(test_calculateControlTimes);
+    RUN_TEST(test_setTimes);
+    RUN_TEST(test_checkCmd_startData);
+    RUN_TEST(test_checkCmd_launchedState);
+    RUN_TEST(test_setPinHighOrLow);
+    
+    UNITY_END();
+    Serial.println("Tests Completed.");  // Debug-Ausgabe
+}
+
+void loop() {
+    // Für Unity-Tests leer lassen
+}

@@ -1,0 +1,23 @@
+#include "unity_config.h"
+#define TESTING_SERIAL Serial1
+
+SoftwareSerial Serial1(90, PIN_PA7);  // RX (nicht genutzt), TX (Pin 7)
+
+void unityOutputStart()
+{
+Serial1.begin(115200);
+}
+
+void unityOutputChar(char c)
+{
+Serial1.print(c);
+}
+
+void unityOutputFlush()
+{
+Serial1.flush();
+}
+
+void unityOutputComplete()
+{
+}

@@ -1,0 +1,30 @@
+#include <unity.h>
+
+const uint32_t PULSE_DURATION = 1500;  // Pulse duration of control signals in Millis
+
+// Drogue chute time window settings for release (time in milliseconds)
+// Enter the default values here!
+uint32_t beginReleaseDrogueChute = 0; //13000
+uint32_t endReleaseDrogueChute = 0;   //18000
+
+// Main chute time windows settings for release (time in milliseconds)
+// Enter the default values here!
+uint32_t beginReleaseMainChute = 0; //23000
+uint32_t endReleaseMainChute = 0;   //28000
+
+// Control signals for drogue chute in last instance (time in milliseconds)
+// Calculated from the release window and the PULSE_DURATION, a change here has no effect!
+uint32_t beginControlDrogueChute = 0;
+uint32_t endControlDrogueChute = 0;
+
+// Control signals for main chute in last instance (time in milliseconds)
+// Calculated from the release window and the PULSE_DURATION, a change here has no effect!
+uint32_t beginControlMainChute = 0;
+uint32_t endControlMainChute = 0;
+
+void calculateControlTimes() {
+    beginControlDrogueChute = endReleaseDrogueChute - PULSE_DURATION;
+    endControlDrogueChute = endReleaseDrogueChute;
+    beginControlMainChute = endReleaseMainChute - PULSE_DURATION;
+    endControlMainChute = endReleaseMainChute;
+}
