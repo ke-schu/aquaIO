@@ -1,19 +1,19 @@
-# AquaIO Firmware für ATtiny84A
+# AquaI/O Firmware  
 
-Dieses Repository enthält die Firmware für den ATtiny84A auf der AquaIO-Platine der Aquasonic-Rakete. Die Firmware wurde entwickelt, um die zeitgesteuerte Steuerung der Fallschirme und die Kommunikation mit AquaBrain über I²C zu ermöglichen.
+## Overview  
+This firmware runs on the AquaI/O board, part of the Aquasonic 3 rocket project. It manages parachute deployment using I²C communication, precise timing, and GPIO control. Designed for ATtiny84a, the system follows a modular architecture for flexibility and maintainability.  
 
-## Funktionen
+## Features  
+- Parachute deployment via configurable timing windows.  
+- I²C slave communication for remote control.  
+- Modular structure for easy updates and extensions.  
+- Debugging support with conditional logging.  
 
-- **Fallschirmansteuerung:** Zeitgesteuertes Auslösen von Haupt- und Vorfallschirmen.
-- **I²C-Kommunikation:** Austausch von Statusinformationen mit AquaBrain (I²C-Master).
-- **Anpassbare Timer-Einstellungen:** Ermöglicht eine Anpassung der Timer an unterschiedliche Flugprofile.
-- **Entwicklungstools:** Erstellt mit ATTinyCore und PlatformIO.
-
-## Entwicklung
-
-Die Firmware wurde in **C++** entwickelt, unter Verwendung von:
-- **PlatformIO:** Als Entwicklungsumgebung für Coding, Kompilierung und Testen.
-- **ATTinyCore:** Zur Unterstützung der Arduino-Framework-Funktionen auf dem ATtiny84A.
+## Setup  
+1. Make sure you have installed Visual Studio Code and PlatformIO
+2. Clone the repository
+3. Open the project in Visual Studio Code.
+4. Connect the ATtiny84a as shown in the following pinout diagram
 
 ## Pinout Diagram
 ![Pinout Diagram](doc/ATtiny_Test.jpg)
