@@ -19,7 +19,7 @@ namespace Pins {
 
     // Function declarations
     void setupPins();
-    void togglePinsByTime(uint32_t timeSinceStart);
+    void togglePinsByTime();
 }
 
 #endif // PINS_HPP

@@ -23,12 +23,13 @@ namespace Timing {
 
     // Function declarations
     void initialize();
+    void startTimer();
     void calculateControlTimes();
     void setTimes(const uint8_t dataPackage[]);
-    bool isWithinReleaseDrogue(uint32_t timeSinceStart);
-    bool isWithinReleaseMain(uint32_t timeSinceStart);
-    bool isWithinControlDrogue(uint32_t timeSinceStart);
-    bool isWithinControlMain(uint32_t timeSinceStart);
+    bool isWithinReleaseDrogue();
+    bool isWithinReleaseMain();
+    bool isWithinControlDrogue();
+    bool isWithinControlMain();
 
     // Debugging helper functions (optional, depending on your debug strategy)
     #ifdef DEBUG

@@ -3,7 +3,6 @@
 namespace StateMachine {
     // State variables
     bool rocketLaunched = false;
-    uint32_t millisOnStart = 0;
     bool timeAdjustMode = false;
 
     // Constants for commands
@@ -42,7 +41,7 @@ namespace StateMachine {
             case launchedState:
                 if (!rocketLaunched) {
                     rocketLaunched = true;
-                    millisOnStart = millis();
+                    Timing::startTimer();
                 }
                 DEBUG_PRINT("Status Raketenstart empf: ");
                 break;

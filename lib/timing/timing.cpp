@@ -13,8 +13,18 @@ namespace Timing {
     uint32_t beginControlMainChute = 0;
     uint32_t endControlMainChute = 0;
 
+    uint32_t millisOnStart = 0;
+
     void initialize() {
         calculateControlTimes();
+    }
+
+    void startTimer() {
+        millisOnStart = millis();
+    }
+
+    uint32_t calculateTimeSinceStart() {
+        return millis() - millisOnStart; 
     }
 
     void calculateControlTimes() {
@@ -35,7 +45,8 @@ namespace Timing {
         #endif
     }
 
-    bool isWithinReleaseDrogue(uint32_t timeSinceStart) {
+    bool isWithinReleaseDrogue() {
+        uint32_t timeSinceStart = calculateTimeSinceStart();
         bool newState = timeSinceStart >= beginReleaseDrogueChute && timeSinceStart <= endReleaseDrogueChute;
         #ifdef DEBUG
             static bool oldState = false;
@@ -48,7 +59,8 @@ namespace Timing {
         return newState;
     }
 
-    bool isWithinReleaseMain(uint32_t timeSinceStart) {
+    bool isWithinReleaseMain() {
+        uint32_t timeSinceStart = calculateTimeSinceStart();
         bool newState = timeSinceStart >= beginReleaseMainChute && timeSinceStart <= endReleaseMainChute;
         #ifdef DEBUG
             static bool oldState = false;
@@ -61,7 +73,8 @@ namespace Timing {
         return newState;
     }
 
-    bool isWithinControlDrogue(uint32_t timeSinceStart) {
+    bool isWithinControlDrogue() {
+        uint32_t timeSinceStart = calculateTimeSinceStart();
         bool newState = timeSinceStart >= beginControlDrogueChute && timeSinceStart <= endControlDrogueChute;
         #ifdef DEBUG
             static bool oldState = false;
@@ -74,7 +87,8 @@ namespace Timing {
         return newState;
     }
 
-    bool isWithinControlMain(uint32_t timeSinceStart) {
+    bool isWithinControlMain() {
+        uint32_t timeSinceStart = calculateTimeSinceStart();
         bool newState = timeSinceStart >= beginControlMainChute && timeSinceStart <= endControlMainChute;
         #ifdef DEBUG
             static bool oldState = false;
