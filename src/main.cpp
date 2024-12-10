@@ -1,5 +1,7 @@
 #include "main.hpp"
 
+// ATTiny84a Software for AquaIO
+
 void setup() {
     #ifdef DEBUG
         Serial.begin(4800);  // Initialize serial communication for debugging
