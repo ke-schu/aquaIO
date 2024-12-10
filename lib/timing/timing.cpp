@@ -7,39 +7,35 @@ namespace Timing {
     uint32_t endReleaseDrogueChute = 0;
     uint32_t beginReleaseMainChute = 0;
     uint32_t endReleaseMainChute = 0;
-
     uint32_t beginControlDrogueChute = 0;
-    uint32_t endControlDrogueChute = 0;
     uint32_t beginControlMainChute = 0;
-    uint32_t endControlMainChute = 0;
 
     uint32_t millisOnStart = 0;
-
-    void initialize() {
-        calculateControlTimes();
-    }
 
     void startTimer() {
         millisOnStart = millis();
     }
 
     uint32_t calculateTimeSinceStart() {
-        return millis() - millisOnStart; 
+        if (millisOnStart = 0) {
+            return 0;
+        } else {
+            return millis() - millisOnStart;
+        }
     }
 
-    void calculateControlTimes() {
-        beginControlDrogueChute = endReleaseDrogueChute - PULSE_DURATION;
-        endControlDrogueChute = endReleaseDrogueChute;
-        beginControlMainChute = endReleaseMainChute - PULSE_DURATION;
-        endControlMainChute = endReleaseMainChute;
+    // Combines two bytes (MSB and LSB) into a time value (in milliseconds) by scaling the result by 100
+    uint32_t combineBytesToTime(uint8_t msb, uint8_t lsb) {
+        return ((msb << 8) | lsb) * 100;
     }
 
     void setTimes(const uint8_t dataPackage[]) {
-        beginReleaseDrogueChute = (dataPackage[0] << 8 | dataPackage[1]) * 100;
-        endReleaseDrogueChute = (dataPackage[2] << 8 | dataPackage[3]) * 100;
-        beginReleaseMainChute = (dataPackage[4] << 8 | dataPackage[5]) * 100;
-        endReleaseMainChute = (dataPackage[6] << 8 | dataPackage[7]) * 100;
-        calculateControlTimes();
+        beginReleaseDrogueChute = combineBytesToTime(dataPackage[0], dataPackage[1]);
+        endReleaseDrogueChute = combineBytesToTime(dataPackage[2], dataPackage[3]);
+        beginReleaseMainChute = combineBytesToTime(dataPackage[4], dataPackage[5]);
+        endReleaseMainChute = combineBytesToTime(dataPackage[6], dataPackage[7]);
+        beginControlDrogueChute = endReleaseDrogueChute - PULSE_DURATION;
+        beginControlMainChute = endReleaseMainChute - PULSE_DURATION;
         #ifdef DEBUG
              printTimeWindows();
         #endif
@@ -75,7 +71,7 @@ namespace Timing {
 
     bool isWithinControlDrogue() {
         uint32_t timeSinceStart = calculateTimeSinceStart();
-        bool newState = timeSinceStart >= beginControlDrogueChute && timeSinceStart <= endControlDrogueChute;
+        bool newState = timeSinceStart >= beginControlDrogueChute && timeSinceStart <= endReleaseDrogueChute;
         #ifdef DEBUG
             static bool oldState = false;
             if(oldState != newState) {
@@ -89,7 +85,7 @@ namespace Timing {
 
     bool isWithinControlMain() {
         uint32_t timeSinceStart = calculateTimeSinceStart();
-        bool newState = timeSinceStart >= beginControlMainChute && timeSinceStart <= endControlMainChute;
+        bool newState = timeSinceStart >= beginControlMainChute && timeSinceStart <= endReleaseMainChute;
         #ifdef DEBUG
             static bool oldState = false;
             if(oldState != newState) {
@@ -116,12 +112,12 @@ namespace Timing {
         DEBUG_PRINT("Drogue Control Window: ");
         DEBUG_PRINT(beginControlDrogueChute);
         DEBUG_PRINT(" - ");
-        DEBUG_PRINTLN(endControlDrogueChute);
+        DEBUG_PRINTLN(endReleaseDrogueChute);
 
         DEBUG_PRINT("Main Control Window: ");
         DEBUG_PRINT(beginControlMainChute);
         DEBUG_PRINT(" - ");
-        DEBUG_PRINTLN(endControlMainChute);
+        DEBUG_PRINTLN(endReleaseMainChute);
     }
     #endif
 }

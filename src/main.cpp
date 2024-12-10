@@ -10,7 +10,6 @@ void setup() {
     DEBUG_PRINTLN(F("ATtiny84a Program started."));
 
     // Initialize the modules
-    Timing::initialize();
     Bus::initialize();
     Pins::setupPins();  // Setup all the pins required by the system
 }

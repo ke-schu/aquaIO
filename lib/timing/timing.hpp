@@ -12,19 +12,14 @@ namespace Timing {
 
     // Variables
     extern uint32_t beginReleaseDrogueChute;
+    extern uint32_t beginControlDrogueChute;
     extern uint32_t endReleaseDrogueChute;
     extern uint32_t beginReleaseMainChute;
+    extern uint32_t beginControlMainChute;
     extern uint32_t endReleaseMainChute;
 
-    extern uint32_t beginControlDrogueChute;
-    extern uint32_t endControlDrogueChute;
-    extern uint32_t beginControlMainChute;
-    extern uint32_t endControlMainChute;
-
     // Function declarations
-    void initialize();
     void startTimer();
-    void calculateControlTimes();
     void setTimes(const uint8_t dataPackage[]);
     bool isWithinReleaseDrogue();
     bool isWithinReleaseMain();

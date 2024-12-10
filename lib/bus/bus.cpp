@@ -15,7 +15,7 @@ namespace Bus {
     void onReceive(int len) {
         if (dataReady) return;
 
-        memset(receiveBuffer, 0, BUFFER_SIZE);
+        memset(receiveBuffer, 0, BUFFER_SIZE); // Clear the buffer to remove any leftover data from previous transmissions
         int i = 0;
         while (Wire.available() && i < BUFFER_SIZE) {
             receiveBuffer[i] = Wire.read();
