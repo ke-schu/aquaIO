@@ -6,7 +6,7 @@
 #include "Debug.hpp"
 #include <Arduino.h>
 
-namespace StateMachine {
+namespace MessageHandler {
     // State variables
     extern bool rocketLaunched;
     extern uint32_t millisOnStart;

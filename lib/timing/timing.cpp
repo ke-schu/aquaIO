@@ -42,60 +42,41 @@ namespace Timing {
         #endif
     }
 
-    bool isWithinReleaseDrogue() {
+    bool isWithinRange(uint32_t beginTime, uint32_t endTime, const __FlashStringHelper* debugMessage) {
         uint32_t timeSinceStart = calculateTimeSinceStart();
-        bool newState = timeSinceStart >= beginReleaseDrogueChute && timeSinceStart <= endReleaseDrogueChute;
+        if (timeSinceStart == 0) {
+            return false;
+        }
+
+        bool newState = timeSinceStart >= beginTime && timeSinceStart <= endTime;
+
         #ifdef DEBUG
             static bool oldState = false;
-            if(oldState != newState) {
+            if (oldState != newState) {
                 oldState = newState;
-                DEBUG_PRINT(F("Drogue chute release state changed to "));
+                DEBUG_PRINT(debugMessage);
+                DEBUG_PRINT(F(" state changed to "));
                 DEBUG_PRINTLN(newState);
             }
         #endif
+
         return newState;
     }
 
-    bool isWithinReleaseMain() {
-        uint32_t timeSinceStart = calculateTimeSinceStart();
-        bool newState = timeSinceStart >= beginReleaseMainChute && timeSinceStart <= endReleaseMainChute;
-        #ifdef DEBUG
-            static bool oldState = false;
-            if(oldState != newState) {
-                oldState = newState;
-                DEBUG_PRINT(F("Main chute release state changed to "));
-                DEBUG_PRINTLN(newState);
-            }
-        #endif
-        return newState;
+    bool checkReleaseDrogue() {
+        return isWithinRange(beginReleaseDrogueChute, endReleaseDrogueChute, F("Drogue chute release"));
     }
 
-    bool isWithinControlDrogue() {
-        uint32_t timeSinceStart = calculateTimeSinceStart();
-        bool newState = timeSinceStart >= beginControlDrogueChute && timeSinceStart <= endReleaseDrogueChute;
-        #ifdef DEBUG
-            static bool oldState = false;
-            if(oldState != newState) {
-                oldState = newState;
-                DEBUG_PRINT(F("Drogue chute control state changed to "));
-                DEBUG_PRINTLN(newState);
-            }
-        #endif
-        return newState;
+    bool checkReleaseMain() {
+        return isWithinRange(beginReleaseMainChute, endReleaseMainChute, F("Main chute release"));
     }
 
-    bool isWithinControlMain() {
-        uint32_t timeSinceStart = calculateTimeSinceStart();
-        bool newState = timeSinceStart >= beginControlMainChute && timeSinceStart <= endReleaseMainChute;
-        #ifdef DEBUG
-            static bool oldState = false;
-            if(oldState != newState) {
-                oldState = newState;
-                DEBUG_PRINT(F("Main chute control state changed to "));
-                DEBUG_PRINTLN(newState);
-            }
-        #endif
-        return newState;
+    bool checkControlDrogue() {
+        return isWithinRange(beginControlDrogueChute, endReleaseDrogueChute, F("Drogue chute control"));
+    }
+
+    bool checkControlMain() {
+        return isWithinRange(beginControlMainChute, endReleaseMainChute, F("Main chute control"));
     }
 
     #ifdef DEBUG

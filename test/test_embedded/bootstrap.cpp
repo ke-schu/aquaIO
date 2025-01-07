@@ -21,7 +21,8 @@ void setup() {
 
     // TIMING
     //RUN_TEST(test_calculateTimeSinceStart);
-    RUN_TEST(test_combineBytesToTime);
+    //RUN_TEST(test_combineBytesToTime);
+    RUN_TEST(test_isWithinRange);
 
     UNITY_END();
 

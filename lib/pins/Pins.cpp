@@ -15,10 +15,10 @@ namespace Pins {
 
     void togglePinsByTime() {
         // Check whether the outputs need to be activated now
-        bool releaseDrogue = Timing::isWithinReleaseDrogue();
-        bool releaseMain = Timing::isWithinReleaseMain();
-        bool controlDrogue = Timing::isWithinControlDrogue();
-        bool controlMain = Timing::isWithinControlMain();
+        bool releaseDrogue = Timing::checkReleaseDrogue();
+        bool releaseMain = Timing::checkReleaseMain();
+        bool controlDrogue = Timing::checkControlDrogue();
+        bool controlMain = Timing::checkControlMain();
 
         // Set outputs
         digitalWrite(RELEASE_DROGUE_PIN, releaseDrogue ? HIGH : LOW);

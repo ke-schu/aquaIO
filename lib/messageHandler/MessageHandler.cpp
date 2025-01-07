@@ -1,6 +1,6 @@
-#include "StateMachine.hpp"
+#include "MessageHandler.hpp"
 
-namespace StateMachine {
+namespace MessageHandler {
     // State variables
     bool rocketLaunched = false;
     bool timeAdjustMode = false;

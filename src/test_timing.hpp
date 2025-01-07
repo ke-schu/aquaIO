@@ -76,5 +76,20 @@ void test_calculateTimeSinceStart(void) {
     }
 }
 
+void test_isWithinRange(void) {
+    bool testFalse0 = Timing::isWithinRange(0, 500, F("Test"));
+    Timing::startTimer();
+    delay(500);
+
+    bool testFalse1 = Timing::isWithinRange(0, 499, F("Test"));
+    bool testTrue = Timing::isWithinRange(499, 505, F("Test"));    
+    bool testFalse2 = Timing::isWithinRange(506, 5000, F("Test"));
+
+    // Keine Methodenaufrufe im TEST_ASSERT!
+    TEST_ASSERT_FALSE(testFalse0);
+    TEST_ASSERT_TRUE(testTrue);
+    TEST_ASSERT_FALSE(testFalse1);
+    TEST_ASSERT_FALSE(testFalse2);
+}
 
 #endif // TEST_EMB_TIMING_HPP

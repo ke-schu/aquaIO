@@ -16,10 +16,10 @@ void setup() {
 
 void loop() {
     // Handle incoming data and state transitions
-    StateMachine::handleIncomingData();
+    MessageHandler::handleIncomingData();
 
     // If rocket is launched, handle the timers for pin control
-    if (StateMachine::rocketLaunched) {
+    if (MessageHandler::rocketLaunched) {
         Pins::togglePinsByTime();  // Handle the state of control pins
     }
 }

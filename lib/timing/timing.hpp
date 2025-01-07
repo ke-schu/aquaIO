@@ -22,10 +22,11 @@ namespace Timing {
     void startTimer();
     uint32_t combineBytesToTime(uint8_t msb, uint8_t lsb); // NACH UNIT TESTS LÖSCHEN
     void setTimes(const uint8_t dataPackage[]);
-    bool isWithinReleaseDrogue();
-    bool isWithinReleaseMain();
-    bool isWithinControlDrogue();
-    bool isWithinControlMain();
+    bool checkReleaseDrogue();
+    bool checkReleaseMain();
+    bool checkControlDrogue();
+    bool checkControlMain();
+    bool isWithinRange(uint32_t beginTime, uint32_t endTime, const __FlashStringHelper* debugMessage);
     uint32_t calculateTimeSinceStart(); // NACH UNIT TESTS LÖSCHEN
 
     // Debugging helper functions (optional, depending on your debug strategy)
