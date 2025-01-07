@@ -1,4 +1,4 @@
-#include "timing.hpp"
+#include "Timing.hpp"
 
 namespace Timing {
 
@@ -17,7 +17,7 @@ namespace Timing {
     }
 
     uint32_t calculateTimeSinceStart() {
-        if (millisOnStart = 0) {
+        if (millisOnStart == 0) {
             return 0;
         } else {
             return millis() - millisOnStart;
@@ -26,7 +26,8 @@ namespace Timing {
 
     // Combines two bytes (MSB and LSB) into a time value (in milliseconds) by scaling the result by 100
     uint32_t combineBytesToTime(uint8_t msb, uint8_t lsb) {
-        return ((msb << 8) | lsb) * 100;
+        uint16_t tempInteger = ((msb << 8) | lsb);          // combine two bytes
+        return static_cast<uint32_t>(tempInteger) * 100;    // cast to uint32_t and multiply by 100
     }
 
     void setTimes(const uint8_t dataPackage[]) {
