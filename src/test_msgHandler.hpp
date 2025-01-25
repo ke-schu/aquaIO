@@ -55,4 +55,8 @@ void test_checkCommand_invalidMessage() {
     TEST_ASSERT_FALSE(MessageHandler::timeAdjustMode); // timeAdjustMode sollte false sein
 }
 
+void test_handleIncomingData_noTimeAdjust() {
+    
+}
+
 #endif // TEST_EMB_MSG_HANDLER_HPP

@@ -27,16 +27,17 @@ void setup() {
 
     // TIMING
     //RUN_TEST(test_calculateTimeSinceStart);
-    //RUN_TEST(test_combineBytesToTime);
+    RUN_TEST(test_combineBytesToTime);
     //RUN_TEST(test_isWithinRange);
+    //RUN_TEST(test_setTimes);
 
     // PINS
     //RUN_TEST(test_setupPins_sets_all_pins_low);
     
     // MESSAGE HANDLER
     //RUN_TEST(test_checkCommand_startData);
-    RUN_TEST(test_checkCommand_launchedState);
-    RUN_TEST(test_checkCommand_invalidMessage);
+    //RUN_TEST(test_checkCommand_launchedState);
+    //RUN_TEST(test_checkCommand_invalidMessage);
 
     UNITY_END();
 

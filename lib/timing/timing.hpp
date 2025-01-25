@@ -8,9 +8,10 @@
 namespace Timing {
 
     // Constants
-    const uint32_t PULSE_DURATION = 1500;  // Pulse duration of control signals in milliseconds
+    const uint32_t PULSE_DURATION = 1000;  // Pulse duration of control signals in milliseconds
 
     // Variables
+    // DELETE AFTER UNIT TESTS
     extern uint32_t beginReleaseDrogueChute;
     extern uint32_t beginControlDrogueChute;
     extern uint32_t endReleaseDrogueChute;

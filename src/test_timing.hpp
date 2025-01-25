@@ -5,7 +5,6 @@
 #include <Timing.hpp>
 
 void test_combineBytesToTime(void) {
-    //TEST_IGNORE();
     // Return Zero For Zero Inputs
     // 0x00 = 0, 0x00 = 0 -> 0 * 100 = 0
     TEST_ASSERT_EQUAL_UINT32(0, Timing::combineBytesToTime(0, 0));
@@ -14,28 +13,28 @@ void test_combineBytesToTime(void) {
     TEST_ASSERT_EQUAL_UINT32(25600, Timing::combineBytesToTime(1, 0));
     
     // MSB = 255 (0xFF), LSB = 255 (0xFF) => Kombiniert: 65535 * 100 = 6553500
-    TEST_ASSERT_EQUAL_UINT32(6553500, Timing::combineBytesToTime(255, 255));
+    TEST_ASSERT_EQUAL_UINT32(6553500, Timing::combineBytesToTime(255, 255)); //4294967196
     
     // MSB = 0, LSB = 76 (0x4C) => Kombiniert: 76 * 100 = 7600
     TEST_ASSERT_EQUAL_UINT32(7600, Timing::combineBytesToTime(0, 76));
 
     // MSB = 51 (0x33), LSB = 51 (0x33) => Kombiniert: 13107 * 100 = 1310700
-    TEST_ASSERT_EQUAL_UINT32(1310700, Timing::combineBytesToTime(51, 51));
+    TEST_ASSERT_EQUAL_UINT32(1310700, Timing::combineBytesToTime(51, 51)); // 4294967276
 
     // MSB = 128 (0x80), LSB = 128 (0x80) => Kombiniert: 32896 * 100 = 3289600
-    TEST_ASSERT_EQUAL_UINT32(3289600, Timing::combineBytesToTime(128, 128));
+    TEST_ASSERT_EQUAL_UINT32(3289600, Timing::combineBytesToTime(128, 128)); // 12800
 
     // MSB = 20 (0x14), LSB = 32 (0x20) => Kombiniert: 5152 * 100 = 515200
-    TEST_ASSERT_EQUAL_UINT32(515200, Timing::combineBytesToTime(20, 32));
+    TEST_ASSERT_EQUAL_UINT32(515200, Timing::combineBytesToTime(20, 32)); // 4294958208
 
     // MSB = 1, LSB = 1 => Kombiniert: 257 * 100 = 25700
     TEST_ASSERT_EQUAL_UINT32(25700, Timing::combineBytesToTime(1, 1));
 
     // MSB = 128 (0x80), LSB = 0 => Kombiniert: 3276800 * 100 = 3276800
-    TEST_ASSERT_EQUAL_UINT32(3276800, Timing::combineBytesToTime(128, 0));
+    TEST_ASSERT_EQUAL_UINT32(3276800, Timing::combineBytesToTime(128, 0)); // 0
 
     // MSB = 254 (0xFE), LSB = 255 (0xFF) => Kombiniert: 65279 * 100 = 6527900
-    TEST_ASSERT_EQUAL_UINT32(6527900, Timing::combineBytesToTime(254, 255));
+    TEST_ASSERT_EQUAL_UINT32(6527900, Timing::combineBytesToTime(254, 255)); // 4294941596
 }
 
 void test_calculateTimeSinceStart(void) {
@@ -91,5 +90,25 @@ void test_isWithinRange(void) {
     TEST_ASSERT_FALSE(testFalse1);
     TEST_ASSERT_FALSE(testFalse2);
 }
+
+
+void test_setTimes() {
+    const uint8_t dataPackage[] = { // Example dataPackage
+        0x01, 0x02, // 0x0102 = 258 * 100 = 25800 ms
+        0x03, 0x04, // 0x0304 = 772 * 100 = 77200 ms
+        0x05, 0x06, // 0x0506 = 1286 * 100 = 128600 ms
+        0x07, 0x08  // 0x0708 = 1800 * 100 = 180000 ms
+    };
+
+    Timing::setTimes(dataPackage);  // Function Call
+
+    TEST_ASSERT_EQUAL_UINT32(25800, Timing::beginReleaseDrogueChute);
+    TEST_ASSERT_EQUAL_UINT32(77200, Timing::endReleaseDrogueChute);
+    TEST_ASSERT_EQUAL_UINT32(128600, Timing::beginReleaseMainChute);
+    TEST_ASSERT_EQUAL_UINT32(180000, Timing::endReleaseMainChute);
+    TEST_ASSERT_EQUAL_UINT32(76200, Timing::beginControlDrogueChute);
+    TEST_ASSERT_EQUAL_UINT32(179000, Timing::beginControlMainChute);
+}
+
 
 #endif // TEST_EMB_TIMING_HPP
